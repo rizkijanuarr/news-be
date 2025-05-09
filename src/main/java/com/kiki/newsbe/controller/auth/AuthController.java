@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@BaseController("auth")
+@BaseController("api/auth")
 public class AuthController {
     private final AuthService authService;
 
@@ -47,7 +47,7 @@ public class AuthController {
             value = "/refresh",
             tagName = "User",
             description = "Refresh Token",
-            group = SwaggerTypeGroup.APPS_WEB
+            group = SwaggerTypeGroup.DEFAULT
     )
     public ResponseEntity<LoginResponse> refreshToken(@RequestHeader("Authorization") String refreshToken) {
         LoginResponse response = authService.refreshToken(refreshToken);
@@ -58,7 +58,7 @@ public class AuthController {
             value = "/logout",
             tagName = "User",
             description = "Logout",
-            group = SwaggerTypeGroup.APPS_WEB
+            group = SwaggerTypeGroup.DEFAULT
     )
     public ResponseEntity<Map<String, Boolean>> logout(@RequestHeader("Authorization") String token) {
         Map<String, Boolean> response = authService.logout(token);

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@BaseController("v1/user")
+@BaseController("api/v1/user")
 public interface UserControllerV1 {
 
     @GetEndpoint(
