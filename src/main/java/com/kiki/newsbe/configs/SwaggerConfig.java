@@ -98,7 +98,7 @@ public class SwaggerConfig {
     @Bean("getListEndpointByType")
     public Map<SwaggerTypeGroup, List<String>> getListEndpointByType() throws IOException,
             ClassNotFoundException {
-        Reflections reflections = new Reflections("com.example.crudspringboot.controller");
+        Reflections reflections = new Reflections("com.kiki.newsbe.controller");
         Class<BaseController> baseControllerClass = BaseController.class;
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(baseControllerClass);
         Map<SwaggerTypeGroup, List<String>> swaggerTypeGroupListMap = SwaggerTypeGroup.swaggerTypeGroupListMapGetDefault();

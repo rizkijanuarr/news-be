@@ -1,8 +1,8 @@
 package com.kiki.newsbe.utils.enums;
 
 public enum RoleEnum {
-    SUPER_FO("Super FO"),
-    BASIC_FO("Basic FO");
+    ADMIN("Admin"),
+    AUTHOR("Author");
 
     private String value;
 
