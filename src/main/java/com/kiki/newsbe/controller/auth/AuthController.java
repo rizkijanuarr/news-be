@@ -44,7 +44,7 @@ public class AuthController {
     }
     
     @PostEndpoint(
-            value = "/refresh",
+            value = "/refresh-token",
             tagName = "User",
             description = "Refresh Token",
             group = SwaggerTypeGroup.DEFAULT
