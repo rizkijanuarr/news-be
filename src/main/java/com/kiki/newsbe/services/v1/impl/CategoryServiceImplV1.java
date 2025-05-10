@@ -6,6 +6,7 @@ import com.kiki.newsbe.request.v1.CategoryRequestV1;
 import com.kiki.newsbe.response.v1.CategoryResponseV1;
 import com.kiki.newsbe.services.v1.CategoryServiceV1;
 import com.kiki.newsbe.utils.exceptions.NotFoundException;
+import com.kiki.newsbe.utils.generated.Slug;
 import com.kiki.newsbe.utils.message.MessageLib;
 import com.kiki.newsbe.utils.validation.Validate;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +39,6 @@ public class CategoryServiceImplV1 implements CategoryServiceV1 {
 
     @Override
     public CategoryResponseV1 createCategory(CategoryRequestV1 request) {
-        Validate.c(request, Map.of(
-                "Nama Tidak Dapat Kosong", CategoryRequestV1::getName,
-                "Gambar Tidak Dapat Kosong", CategoryRequestV1::getImage
-        ));
-
         CategoryEntity savedCategory = setCategoryInDatabase(request);
         return responses(savedCategory);
     }
@@ -102,10 +98,17 @@ public class CategoryServiceImplV1 implements CategoryServiceV1 {
     }
 
     private CategoryEntity setCategoryInDatabase(CategoryRequestV1 request) {
+        Validate.c(request, Map.of(
+                "Nama Tidak Dapat Kosong", CategoryRequestV1::getName,
+                "Gambar Tidak Dapat Kosong", CategoryRequestV1::getImage
+        ));
+
         CategoryEntity category = new CategoryEntity();
+
         category.setName(request.getName());
-        category.setSlug(generateSlug(request.getName()));
+        category.setSlug(Slug.of(request.getName()));
         category.setImage(request.getImage());
+
         category.setCreatedBy(getCurrentUser());
         category.setCreatedDate(getCreatedDate());
 
@@ -116,7 +119,7 @@ public class CategoryServiceImplV1 implements CategoryServiceV1 {
         CategoryEntity category = findCategoryById(id);
 
         category.setName(request.getName());
-        category.setSlug(generateSlug(request.getName()));
+        category.setSlug(Slug.of(request.getName()));
         category.setImage(request.getImage());
 
         category.setModifiedBy(getModifiedByUpdate());
@@ -159,28 +162,5 @@ public class CategoryServiceImplV1 implements CategoryServiceV1 {
 
     private Date getModifiedDate() {
         return new Date();
-    }
-
-    private String generateSlug(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            return "";
-        }
-
-        // Convert to lowercase
-        String slug = name.toLowerCase();
-
-        // Replace spaces with hyphens
-        slug = slug.replaceAll("\\s+", "-");
-
-        // Remove special characters except hyphens
-        slug = slug.replaceAll("[^a-z0-9-]", "");
-
-        // Remove multiple consecutive hyphens
-        slug = slug.replaceAll("-+", "-");
-
-        // Remove leading and trailing hyphens
-        slug = slug.replaceAll("^-+|-+$", "");
-
-        return slug;
     }
 }

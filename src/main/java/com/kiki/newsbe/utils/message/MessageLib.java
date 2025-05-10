@@ -32,4 +32,8 @@ public class MessageLib {
     public String getCategoryNotFound() {
         return messageConfig.get("category.not.found");
     }
+
+    public String getPostNotFound() {
+        return messageConfig.get("post.not.found");
+    }
 }
