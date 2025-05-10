@@ -33,7 +33,7 @@ public interface CategoryControllerV1 {
     @GetEndpoint(
             value = "/{id}",
             tagName = "Categories Management",
-            description = "Create a new Category",
+            description = "Details Category",
             group = SwaggerTypeGroup.APPS_WEB
     )
     ResponseEntity<BaseResponse> detailsCategory(@PathVariable("id") String id);
@@ -41,7 +41,7 @@ public interface CategoryControllerV1 {
     @PutEndpoint(
             value = "/{id}",
             tagName = "Categories Management",
-            description = "Details Category",
+            description = "Update Category",
             group = SwaggerTypeGroup.APPS_WEB
     )
     ResponseEntity<BaseResponse> updateCategory(@PathVariable("id") String id, @RequestBody CategoryRequestV1 request);

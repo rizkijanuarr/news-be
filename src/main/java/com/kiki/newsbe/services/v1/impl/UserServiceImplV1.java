@@ -31,8 +31,7 @@ public class UserServiceImplV1 implements UserServiceV1 {
     private final MessageLib messageLib;
 
     @Override
-    public List<UserResponseV1> getListUser(String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public List<UserResponseV1> getListUser() {
         List<UserEntity> users = userRepository.findAllByOrderByCreatedDateDesc();
         List<UserResponseV1> responses = new ArrayList<>();
         for (UserEntity user : users) {
@@ -42,35 +41,30 @@ public class UserServiceImplV1 implements UserServiceV1 {
     }
 
     @Override
-    public UserResponseV1 createUser(UserRequestV1 req, String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public UserResponseV1 createUser(UserRequestV1 req) {
         UserEntity savedUser = setUserInDatabase(req);
         return mapUserToResponse(savedUser);
     }
 
     @Override
-    public UserResponseV1 detailUser(String id, String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public UserResponseV1 detailUser(String id) {
         UserEntity userById = findUserById(id);
         return mapUserToResponse(userById);
     }
 
     @Override
-    public UserResponseV1 updateUser(String id, UserRequestV1 req, String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public UserResponseV1 updateUser(String id, UserRequestV1 req) {
         UserEntity updated = setUserUpdateInDatabase(id, req);
         return mapUserToResponse(updated);
     }
 
     @Override
-    public UserResponseV1 deleteUser(String id, String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public UserResponseV1 deleteUser(String id) {
         return mapUserToResponse(setUserSoftDelete(id));
     }
 
     @Override
-    public Slice<UserResponseV1> getUsersActive(Pageable pageable, String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public Slice<UserResponseV1> getUsersActive(Pageable pageable) {
         Slice<UserEntity> usersList = userRepository.findAllByActiveTrueOrderByCreatedDateDesc(pageable);
         List<UserResponseV1> responses = new ArrayList<>();
 
@@ -82,8 +76,7 @@ public class UserServiceImplV1 implements UserServiceV1 {
     }
 
     @Override
-    public Slice<UserResponseV1> getUsersInActive(Pageable pageable, String requester) {
-        UserEntity currentUser = getUserByRequester(requester);
+    public Slice<UserResponseV1> getUsersInActive(Pageable pageable) {
         Slice<UserEntity> usersList = userRepository.findAllByActiveFalseOrderByCreatedDateDesc(pageable);
         List<UserResponseV1> responses = new ArrayList<>();
 
@@ -185,10 +178,5 @@ public class UserServiceImplV1 implements UserServiceV1 {
 
     private Date getCreatedDate() {
         return new Date();
-    }
-
-    private UserEntity getUserByRequester(String requester) {
-        return userRepository.findByUser_email(requester)
-                .orElseThrow(() -> new NotFoundException(messageLib.getUserIdNotFound()));
     }
 }

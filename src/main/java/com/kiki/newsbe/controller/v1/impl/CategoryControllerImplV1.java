@@ -39,7 +39,7 @@ public class CategoryControllerImplV1 implements CategoryControllerV1 {
 
     @Override
     public ResponseEntity<BaseResponse> deleteCategory(String id) {
-        return ResponseHelper.buildOkResponse(categoryServiceV1.detailsCategory(id));
+        return ResponseHelper.buildOkResponse(categoryServiceV1.deleteCategory(id));
     }
 
     @Override
