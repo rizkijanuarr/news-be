@@ -37,7 +37,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs/swagger-config"
                         ).permitAll()
-                        .requestMatchers("api/auth/logout", "api/auth/refresh").authenticated()
+                        .requestMatchers("api/auth/logout", "api/auth/refresh-token").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
