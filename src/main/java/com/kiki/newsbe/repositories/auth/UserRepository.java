@@ -24,4 +24,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     @Query("SELECT u FROM UserEntity u WHERE u.user_email = :email")
     Optional<UserEntity> findByUser_email(String email);
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.active = true")
+    Integer countActiveUsers();
 }
