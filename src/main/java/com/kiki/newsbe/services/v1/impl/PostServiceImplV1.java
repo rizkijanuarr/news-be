@@ -9,7 +9,6 @@ import com.kiki.newsbe.repositories.entities.auth.UserEntity;
 import com.kiki.newsbe.request.v1.PostRequestV1;
 import com.kiki.newsbe.response.v1.PostResponseV1;
 import com.kiki.newsbe.services.v1.PostServiceV1;
-import com.kiki.newsbe.utils.exceptions.BadRequestException;
 import com.kiki.newsbe.utils.exceptions.NotFoundException;
 import com.kiki.newsbe.utils.generated.Slug;
 import com.kiki.newsbe.utils.message.MessageLib;
@@ -18,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -45,8 +45,8 @@ public class PostServiceImplV1 implements PostServiceV1 {
     }
 
     @Override
-    public PostResponseV1 createPost(PostRequestV1 request, String requester) {
-        PostEntity savedPost = setPostInDatabase(request, requester);
+    public PostResponseV1 createPost(PostRequestV1 request) {
+        PostEntity savedPost = setPostInDatabase(request);
         return responses(savedPost);
     }
 
@@ -57,14 +57,14 @@ public class PostServiceImplV1 implements PostServiceV1 {
     }
 
     @Override
-    public PostResponseV1 updatePost(String id, PostRequestV1 request, String requester) {
-        PostEntity updated = setPostUpdateInDatabase(id, request, requester);
+    public PostResponseV1 updatePost(String id, PostRequestV1 request) {
+        PostEntity updated = setPostUpdateInDatabase(id, request);
         return responses(updated);
     }
 
     @Override
-    public PostResponseV1 deletePost(String id, String requester) {
-        return responses(setPostSoftDelete(id, requester));
+    public PostResponseV1 deletePost(String id) {
+        return responses(setPostSoftDelete(id));
     }
 
     @Override
@@ -89,21 +89,21 @@ public class PostServiceImplV1 implements PostServiceV1 {
         return new SliceImpl<>(responses, pageable, postList.hasNext());
     }
 
-    private PostEntity setPostSoftDelete(String id, String requester) {
-        UserEntity currentUser = getUser(requester);
+    private PostEntity setPostSoftDelete(String id) {
+        UserEntity currentUser = getCurrentLoggedInUser();
         PostEntity post = findPostById(id);
 
         post.setDeletedDate(getModifiedDate());
-        post.setDeletedBy(currentUser.getUser_name());
+        post.setDeletedBy(currentUser.getUser_email());
         post.setModifiedBy(getModifiedByDelete());
         post.setActive(false);
 
         return postRepository.save(post);
     }
 
-    private PostEntity setPostUpdateInDatabase(String id, PostRequestV1 request, String requester) {
+    private PostEntity setPostUpdateInDatabase(String id, PostRequestV1 request) {
         CategoryEntity category = setCategoryRelationID(request);
-        UserEntity currentUser = getUser(requester);
+        UserEntity currentUser = getCurrentLoggedInUser();
         PostEntity post = findPostById(id);
 
         post.setCategory_id(category);
@@ -134,7 +134,7 @@ public class PostServiceImplV1 implements PostServiceV1 {
                 .orElseThrow(() -> new NotFoundException(messageLib.getPostNotFound()));
     }
 
-    private PostEntity setPostInDatabase(PostRequestV1 request, String requester) {
+    private PostEntity setPostInDatabase(PostRequestV1 request) {
         Validate.c(request, Map.of(
                 "Kategori Tidak Dapat Kosong", PostRequestV1::getCategory_id,
                 "Judul Tidak Dapat Kosong", PostRequestV1::getTitle,
@@ -143,8 +143,7 @@ public class PostServiceImplV1 implements PostServiceV1 {
         ));
 
         CategoryEntity category = setCategoryRelationID(request);
-        UserEntity currentUser = getUser(requester);
-
+        UserEntity currentUser = getCurrentLoggedInUser();
         PostEntity post = new PostEntity();
 
         post.setCategory_id(category);
@@ -160,9 +159,10 @@ public class PostServiceImplV1 implements PostServiceV1 {
         return postRepository.save(post);
     }
 
-    private UserEntity getUser(String requester) {
-        return userRepository.findById(requester)
-                .orElseThrow(() -> new BadRequestException(messageLib.getUserIdNotFound()));
+    private UserEntity getCurrentLoggedInUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUser_email(email)
+                .orElseThrow(() -> new NotFoundException(messageLib.getUserIdNotFound()));
     }
 
     private Date getCreatedDate() {

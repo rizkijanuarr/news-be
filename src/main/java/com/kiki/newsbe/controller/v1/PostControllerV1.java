@@ -2,7 +2,6 @@ package com.kiki.newsbe.controller.v1;
 
 import com.kiki.newsbe.annotations.swagger.*;
 import com.kiki.newsbe.controller.advices.BaseController;
-import com.kiki.newsbe.request.v1.CategoryRequestV1;
 import com.kiki.newsbe.request.v1.PostRequestV1;
 import com.kiki.newsbe.response.base.BaseResponse;
 import com.kiki.newsbe.response.base.BaseResponseSlice;
@@ -30,8 +29,7 @@ public interface PostControllerV1 {
             group = SwaggerTypeGroup.APPS_WEB
     )
     ResponseEntity<BaseResponse> createPost(
-            @Valid @RequestBody PostRequestV1 request,
-            String requester
+            @Valid @RequestBody PostRequestV1 request
     );
 
     @GetEndpoint(
@@ -50,8 +48,7 @@ public interface PostControllerV1 {
     )
     ResponseEntity<BaseResponse> updatePost(
             @PathVariable("id") String id,
-            @RequestBody PostRequestV1 request,
-            String requester
+            @RequestBody PostRequestV1 request
     );
 
     @DeleteEndpoint(
@@ -61,8 +58,7 @@ public interface PostControllerV1 {
             group = SwaggerTypeGroup.APPS_WEB
     )
     ResponseEntity<BaseResponse> deletePost(
-            @PathVariable("id") String id,
-            String requester
+            @PathVariable("id") String id
     );
 
     @GetEndpoint(

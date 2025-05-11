@@ -1,9 +1,7 @@
 package com.kiki.newsbe.services.v1.impl;
 
 import com.kiki.newsbe.repositories.PostViewsRepository;
-import com.kiki.newsbe.repositories.entities.PostEntity;
 import com.kiki.newsbe.repositories.entities.PostViewsEntity;
-import com.kiki.newsbe.response.v1.PostResponseV1;
 import com.kiki.newsbe.response.v1.PostViewsResponseV1;
 import com.kiki.newsbe.services.v1.PostViewsServiceV1;
 import com.kiki.newsbe.utils.message.MessageLib;

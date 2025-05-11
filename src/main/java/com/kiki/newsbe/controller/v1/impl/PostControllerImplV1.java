@@ -25,8 +25,8 @@ public class PostControllerImplV1 implements PostControllerV1 {
     }
 
     @Override
-    public ResponseEntity<BaseResponse> createPost(PostRequestV1 request, String requester) {
-        return ResponseHelper.buildOkResponse(postServiceV1.createPost(request, requester));
+    public ResponseEntity<BaseResponse> createPost(PostRequestV1 request) {
+        return ResponseHelper.buildOkResponse(postServiceV1.createPost(request));
     }
 
     @Override
@@ -35,13 +35,13 @@ public class PostControllerImplV1 implements PostControllerV1 {
     }
 
     @Override
-    public ResponseEntity<BaseResponse> updatePost(String id, PostRequestV1 request, String requester) {
-        return ResponseHelper.buildOkResponse(postServiceV1.updatePost(id, request, requester));
+    public ResponseEntity<BaseResponse> updatePost(String id, PostRequestV1 request) {
+        return ResponseHelper.buildOkResponse(postServiceV1.updatePost(id, request));
     }
 
     @Override
-    public ResponseEntity<BaseResponse> deletePost(String id, String requester) {
-        return ResponseHelper.buildOkResponse(postServiceV1.deletePost(id, requester));
+    public ResponseEntity<BaseResponse> deletePost(String id) {
+        return ResponseHelper.buildOkResponse(postServiceV1.deletePost(id));
     }
 
     @Override
