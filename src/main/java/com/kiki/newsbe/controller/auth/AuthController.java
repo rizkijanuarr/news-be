@@ -8,11 +8,13 @@ import com.kiki.newsbe.request.auth.LoginRequest;
 import com.kiki.newsbe.response.auth.LoginResponse;
 import com.kiki.newsbe.response.auth.RegisterResponse;
 import com.kiki.newsbe.services.auth.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @BaseController("api/auth")
 public class AuthController {
     private final AuthService authService;
@@ -61,6 +63,7 @@ public class AuthController {
             group = SwaggerTypeGroup.DEFAULT
     )
     public ResponseEntity<Map<String, Boolean>> logout(@RequestHeader("Authorization") String token) {
+        System.out.println("Authorization header: " + token);
         Map<String, Boolean> response = authService.logout(token);
         return ResponseEntity.ok(response);
     }

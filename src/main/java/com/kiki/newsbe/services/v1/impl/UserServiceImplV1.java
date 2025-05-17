@@ -11,6 +11,7 @@ import com.kiki.newsbe.request.v1.UserRequestV1;
 import com.kiki.newsbe.response.v1.UserResponseV1;
 import com.kiki.newsbe.services.v1.UserServiceV1;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -64,15 +65,14 @@ public class UserServiceImplV1 implements UserServiceV1 {
     }
 
     @Override
-    public Slice<UserResponseV1> getUsersActive(Pageable pageable) {
-        Slice<UserEntity> usersList = userRepository.findAllByActiveTrueOrderByCreatedDateDesc(pageable);
-        List<UserResponseV1> responses = new ArrayList<>();
+    public Page<UserResponseV1> getUsersActive(Pageable pageable, String stringFilter) {
 
-        for (UserEntity user : usersList) {
-            responses.add(mapUserToResponse(user));
+        if(stringFilter == null || stringFilter.isEmpty()){
+            stringFilter = null;
         }
 
-        return new SliceImpl<>(responses, pageable, usersList.hasNext());
+        Page<UserEntity> usersList = userRepository.findAllByActiveTrueOrderByCreatedDateDesc(pageable, stringFilter);
+        return usersList.map(this::mapUserToResponse);
     }
 
     @Override

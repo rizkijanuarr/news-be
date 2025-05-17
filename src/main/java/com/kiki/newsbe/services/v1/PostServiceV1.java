@@ -2,6 +2,7 @@ package com.kiki.newsbe.services.v1;
 
 import com.kiki.newsbe.request.v1.PostRequestV1;
 import com.kiki.newsbe.response.v1.PostResponseV1;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -19,7 +20,7 @@ public interface PostServiceV1 {
 
     PostResponseV1 deletePost(String id);
 
-    Slice<PostResponseV1> getListPostActive(Pageable pageable);
+    Page<PostResponseV1> getListPostActive(Pageable pageable, String stringFilter);
 
     Slice<PostResponseV1> getListPostInactive(Pageable pageable);
 }

@@ -1,8 +1,8 @@
 package com.kiki.newsbe.services.v1;
 
-
 import com.kiki.newsbe.request.v1.CategoryRequestV1;
 import com.kiki.newsbe.response.v1.CategoryResponseV1;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -20,7 +20,7 @@ public interface CategoryServiceV1 {
 
     CategoryResponseV1 deleteCategory(String id);
 
-    Slice<CategoryResponseV1> getListCategoriesActive(Pageable pageable);
+    Page<CategoryResponseV1> getListCategoriesActive(Pageable pageable, String stringFilter);
 
     Slice<CategoryResponseV1> getListCategoriesInactive(Pageable pageable);
 

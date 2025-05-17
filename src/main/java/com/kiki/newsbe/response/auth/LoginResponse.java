@@ -1,7 +1,7 @@
 package com.kiki.newsbe.response.auth;
 
 import com.kiki.newsbe.utils.date.DateUtil;
-import com.kiki.newsbe.utils.enums.RoleEnum;
+import com.kiki.newsbe.utils.enumaration.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

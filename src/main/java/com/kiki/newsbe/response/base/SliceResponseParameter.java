@@ -2,7 +2,6 @@ package com.kiki.newsbe.response.base;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
@@ -19,17 +18,15 @@ import java.util.List;
 @JsonSerialize
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class BaseResponse {
+public class SliceResponseParameter<T> {
     @Builder.Default
     private Boolean success = true;
     private String message;
-    private Object data;
+    private List<T> data;
     private Boolean isFirst;
     private Boolean isLast;
     private Boolean hasNext;
-    private Integer currentPage;
-    private Integer totalPage;
-    private Long totalData;
-    private Integer pageSize;
     private List<ErrorResponse> errors;
+    private Long totalData;
+    private Integer currentPage;
 }

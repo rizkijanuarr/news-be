@@ -2,14 +2,15 @@ package com.kiki.newsbe.controller.v1;
 
 import com.kiki.newsbe.annotations.swagger.*;
 import com.kiki.newsbe.controller.advices.BaseController;
-import com.kiki.newsbe.request.v1.PostRequestV1;
-import com.kiki.newsbe.response.base.BaseResponse;
-import com.kiki.newsbe.response.base.BaseResponseSlice;
-import jakarta.validation.Valid;
+import com.kiki.newsbe.response.base.DataResponseParameter;
+import com.kiki.newsbe.response.base.ListResponseParameter;
+import com.kiki.newsbe.response.base.PageResponseParameter;
+import com.kiki.newsbe.response.base.SliceResponseParameter;
+import com.kiki.newsbe.response.v1.PostResponseV1;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @BaseController("api/v1/post")
 public interface PostControllerV1 {
@@ -20,16 +21,20 @@ public interface PostControllerV1 {
             description = "Get list of all Posts",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponse> getListPosts();
+    ListResponseParameter<PostResponseV1> getListPosts();
 
     @PostEndpoint(
             value = "/",
             tagName = "Post Management",
             description = "Create a new Post",
-            group = SwaggerTypeGroup.APPS_WEB
+            group = SwaggerTypeGroup.APPS_WEB,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    ResponseEntity<BaseResponse> createPost(
-            @Valid @RequestBody PostRequestV1 request
+    DataResponseParameter<PostResponseV1> createPost(
+            @RequestPart("category_id") String category_id,
+            @RequestPart("title") String title,
+            @RequestPart("content") String content,
+            @RequestPart("image") MultipartFile image
     );
 
     @GetEndpoint(
@@ -38,17 +43,21 @@ public interface PostControllerV1 {
             description = "Details Post",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponse> detailsPost(@PathVariable("id") String id);
+    DataResponseParameter<PostResponseV1> detailsPost(@PathVariable("id") String id);
 
     @PutEndpoint(
             value = "/{id}",
             tagName = "Post Management",
             description = "Update Post",
-            group = SwaggerTypeGroup.APPS_WEB
+            group = SwaggerTypeGroup.APPS_WEB,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    ResponseEntity<BaseResponse> updatePost(
+    DataResponseParameter<PostResponseV1> updatePost(
             @PathVariable("id") String id,
-            @RequestBody PostRequestV1 request
+            @RequestPart(value = "category_id") String category_id,
+            @RequestPart(value = "title") String title,
+            @RequestPart(value = "content") String content,
+            @RequestPart(value = "image", required = false) MultipartFile image
     );
 
     @DeleteEndpoint(
@@ -57,7 +66,7 @@ public interface PostControllerV1 {
             description = "Delete Post",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponse> deletePost(
+    DataResponseParameter<PostResponseV1> deletePost(
             @PathVariable("id") String id
     );
 
@@ -67,7 +76,10 @@ public interface PostControllerV1 {
             description = "List Post ACTIVE",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponseSlice> getListPostActive(Pageable pageable);
+    PageResponseParameter<PostResponseV1> getListPostActive(
+            Pageable pageable,
+            @RequestParam(value = "string_filter", required = false) String stringFilter
+    );
 
     @GetEndpoint(
             value = "/list/INACTIVE",
@@ -75,6 +87,6 @@ public interface PostControllerV1 {
             description = "List Post INACTIVE",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponseSlice> getListPostInactive(Pageable pageable);
+    SliceResponseParameter<PostResponseV1>  getListPostInactive(Pageable pageable);
 
 }

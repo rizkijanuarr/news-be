@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.kiki.newsbe.utils.date.DateUtil;
+import com.kiki.newsbe.utils.ImageUrlUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,5 +52,8 @@ public class CategoryResponseV1 {
         return DateUtil.formatLongDateTime(deletedDate);
     }
 
-
+    @JsonProperty("image")
+    public String getImage() {
+        return image;
+    }
 }

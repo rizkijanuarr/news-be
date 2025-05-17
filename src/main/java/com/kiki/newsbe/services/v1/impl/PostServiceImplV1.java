@@ -9,17 +9,23 @@ import com.kiki.newsbe.repositories.entities.auth.UserEntity;
 import com.kiki.newsbe.request.v1.PostRequestV1;
 import com.kiki.newsbe.response.v1.PostResponseV1;
 import com.kiki.newsbe.services.v1.PostServiceV1;
+import com.kiki.newsbe.utils.FileStorageUtil;
+import com.kiki.newsbe.utils.ImageUrlUtil;
 import com.kiki.newsbe.utils.exceptions.NotFoundException;
 import com.kiki.newsbe.utils.generated.Slug;
 import com.kiki.newsbe.utils.message.MessageLib;
 import com.kiki.newsbe.utils.validation.Validate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +39,8 @@ public class PostServiceImplV1 implements PostServiceV1 {
     private final MessageLib messageLib;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final FileStorageUtil fileStorageUtil;
+    private final ImageUrlUtil imageUrlUtil;
 
     @Override
     public List<PostResponseV1> getListPosts() {
@@ -68,14 +76,14 @@ public class PostServiceImplV1 implements PostServiceV1 {
     }
 
     @Override
-    public Slice<PostResponseV1> getListPostActive(Pageable pageable) {
-        Slice<PostEntity> postList = postRepository.findAllByActiveTrueOrderByCreatedDateDesc(pageable);
-        List<PostResponseV1> responses = new ArrayList<>();
-        for (PostEntity post : postList) {
-            responses.add(responses(post));
+    public Page<PostResponseV1> getListPostActive(Pageable pageable, String stringFilter) {
+
+        if(stringFilter == null || stringFilter.isEmpty()){
+            stringFilter = null;
         }
 
-        return new SliceImpl<>(responses, pageable, postList.hasNext());
+        Page<PostEntity> postList = postRepository.findAllByActiveTrueOrderByCreatedDateDesc(pageable, stringFilter);
+        return postList.map(this::responses);
     }
 
     @Override
@@ -93,6 +101,16 @@ public class PostServiceImplV1 implements PostServiceV1 {
         UserEntity currentUser = getCurrentLoggedInUser();
         PostEntity post = findPostById(id);
 
+        // Delete image file when category is deleted
+        if (post.getImage() != null) {
+            try {
+                fileStorageUtil.deleteFile(post.getImage());
+            } catch (IOException e) {
+                // Log error but continue with deletion
+                e.printStackTrace();
+            }
+        }
+
         post.setDeletedDate(getModifiedDate());
         post.setDeletedBy(currentUser.getUser_email());
         post.setModifiedBy(getModifiedByDelete());
@@ -106,12 +124,25 @@ public class PostServiceImplV1 implements PostServiceV1 {
         UserEntity currentUser = getCurrentLoggedInUser();
         PostEntity post = findPostById(id);
 
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            try {
+                // Delete old image if exists
+                if (post.getImage() != null) {
+                    fileStorageUtil.deleteFile(post.getImage());
+                }
+                // Store new image
+                String imageFilename = fileStorageUtil.storeFile(request.getImage(), "post");
+                post.setImage(imageFilename);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to update image file", e);
+            }
+        }
+
         post.setCategory_id(category);
         post.setUser_id(currentUser);
         post.setTitle(request.getTitle());
         post.setSlug(Slug.of(request.getTitle()));
         post.setContent(request.getContent());
-        post.setImage(request.getImage());
 
         post.setModifiedBy(currentUser.getUser_name());
         post.setModifiedDate(getModifiedDate());
@@ -142,6 +173,13 @@ public class PostServiceImplV1 implements PostServiceV1 {
                 "Gambar Tidak Dapat Kosong", PostRequestV1::getImage
         ));
 
+        String imageFilename = null;
+        try {
+            imageFilename = fileStorageUtil.storeFile(request.getImage(), "post");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store image file", e);
+        }
+
         CategoryEntity category = setCategoryRelationID(request);
         UserEntity currentUser = getCurrentLoggedInUser();
         PostEntity post = new PostEntity();
@@ -151,7 +189,7 @@ public class PostServiceImplV1 implements PostServiceV1 {
         post.setTitle(request.getTitle());
         post.setSlug(Slug.of(request.getTitle()));
         post.setContent(request.getContent());
-        post.setImage(request.getImage());
+        post.setImage(imageFilename);
 
         post.setCreatedBy(currentUser.getUser_email());
         post.setCreatedDate(getCreatedDate());
@@ -175,6 +213,7 @@ public class PostServiceImplV1 implements PostServiceV1 {
     }
 
     private PostResponseV1 responses(PostEntity entity) {
+        String imageUrl = imageUrlUtil.getImageUrl(entity.getImage());
         return PostResponseV1.builder()
                 .id(entity.getId())
                 .category(PostResponseV1.CategoryResponse.builder()
@@ -191,7 +230,7 @@ public class PostServiceImplV1 implements PostServiceV1 {
                 .title(entity.getTitle())
                 .slug(entity.getSlug())
                 .content(entity.getContent())
-                .image(entity.getImage())
+                .image(imageUrl)
                 .active(entity.getActive())
                 .createdDate(entity.getCreatedDate())
                 .modifiedDate(entity.getModifiedDate())

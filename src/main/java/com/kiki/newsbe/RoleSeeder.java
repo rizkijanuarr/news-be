@@ -2,7 +2,7 @@ package com.kiki.newsbe;
 
 import com.kiki.newsbe.repositories.auth.RoleRepository;
 import com.kiki.newsbe.repositories.entities.auth.RoleEntity;
-import com.kiki.newsbe.utils.enums.RoleEnum;
+import com.kiki.newsbe.utils.enumaration.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

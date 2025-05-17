@@ -1,7 +1,7 @@
 package com.kiki.newsbe.response.base;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
@@ -9,15 +9,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSerialize
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-public class BaseErrorResponse {
-    private String field;
-    private Integer code;
-    private String description;
+public class DataResponseParameter<T> {
+    @Builder.Default
+    private Boolean success = true;
+    private String message;
+    private T data;
+    private List<ErrorResponse> errors;
 }

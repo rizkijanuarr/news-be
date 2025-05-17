@@ -2,14 +2,15 @@ package com.kiki.newsbe.controller.v1;
 
 import com.kiki.newsbe.annotations.swagger.*;
 import com.kiki.newsbe.controller.advices.BaseController;
-import com.kiki.newsbe.request.v1.CategoryRequestV1;
-import com.kiki.newsbe.response.base.BaseResponse;
-import com.kiki.newsbe.response.base.BaseResponseSlice;
-import jakarta.validation.Valid;
+import com.kiki.newsbe.response.base.DataResponseParameter;
+import com.kiki.newsbe.response.base.ListResponseParameter;
+import com.kiki.newsbe.response.base.PageResponseParameter;
+import com.kiki.newsbe.response.base.SliceResponseParameter;
+import com.kiki.newsbe.response.v1.CategoryResponseV1;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @BaseController("api/v1/category")
 public interface CategoryControllerV1 {
@@ -20,15 +21,19 @@ public interface CategoryControllerV1 {
             description = "Get list of all Categories",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponse> getListCategories();
+    ListResponseParameter<CategoryResponseV1> getListCategories();
 
     @PostEndpoint(
             value = "/",
             tagName = "Categories Management",
             description = "Create a new Category",
-            group = SwaggerTypeGroup.APPS_WEB
+            group = SwaggerTypeGroup.APPS_WEB,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    ResponseEntity<BaseResponse> createCategory(@Valid @RequestBody CategoryRequestV1 request);
+    DataResponseParameter<CategoryResponseV1> createCategory(
+            @RequestPart("name") String name,
+            @RequestPart("image") MultipartFile image
+    );
 
     @GetEndpoint(
             value = "/{id}",
@@ -36,15 +41,20 @@ public interface CategoryControllerV1 {
             description = "Details Category",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponse> detailsCategory(@PathVariable("id") String id);
+    DataResponseParameter<CategoryResponseV1> detailsCategory(@PathVariable("id") String id);
 
     @PutEndpoint(
             value = "/{id}",
             tagName = "Categories Management",
             description = "Update Category",
-            group = SwaggerTypeGroup.APPS_WEB
+            group = SwaggerTypeGroup.APPS_WEB,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    ResponseEntity<BaseResponse> updateCategory(@PathVariable("id") String id, @RequestBody CategoryRequestV1 request);
+    DataResponseParameter<CategoryResponseV1> updateCategory(
+            @PathVariable("id") String id,
+            @RequestPart(value = "name") String name,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    );
 
     @DeleteEndpoint(
             value = "/{id}",
@@ -52,7 +62,7 @@ public interface CategoryControllerV1 {
             description = "Delete Category",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponse> deleteCategory(@PathVariable("id") String id);
+    DataResponseParameter<CategoryResponseV1> deleteCategory(@PathVariable("id") String id);
 
     @GetEndpoint(
             value = "/list/ACTIVE",
@@ -60,7 +70,10 @@ public interface CategoryControllerV1 {
             description = "List Categories ACTIVE",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponseSlice> getListCategoriesActive(Pageable pageable);
+    PageResponseParameter<CategoryResponseV1> getListCategoriesActive(
+            Pageable pageable,
+            @RequestParam(value = "string_filter", required = false) String stringFilter
+    );
 
     @GetEndpoint(
             value = "/list/INACTIVE",
@@ -68,6 +81,6 @@ public interface CategoryControllerV1 {
             description = "List Categories INACTIVE",
             group = SwaggerTypeGroup.APPS_WEB
     )
-    ResponseEntity<BaseResponseSlice> getListCategoriesInactive(Pageable pageable);
+    SliceResponseParameter<CategoryResponseV1> getListCategoriesInactive(Pageable pageable);
 
 }

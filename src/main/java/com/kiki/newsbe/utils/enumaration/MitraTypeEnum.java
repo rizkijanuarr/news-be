@@ -1,4 +1,4 @@
-package com.kiki.newsbe.utils.enums;
+package com.kiki.newsbe.utils.enumaration;
 
 import java.util.List;
 

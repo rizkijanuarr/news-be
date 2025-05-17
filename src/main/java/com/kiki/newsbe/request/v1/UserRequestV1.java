@@ -1,6 +1,6 @@
 package com.kiki.newsbe.request.v1;
 
-import com.kiki.newsbe.utils.enums.RoleEnum;
+import com.kiki.newsbe.utils.enumaration.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
